@@ -14,6 +14,8 @@
 
 #if WF_HAS_XWAYLAND
 
+static xcb_connection_t *connection;
+
 class wayfire_xwayland_view_base : public wf::wlr_view_t
 {
   protected:
@@ -42,9 +44,10 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
   public:
     static bool load_atoms(const char *server_name)
     {
-        auto connection = xcb_connect(server_name, NULL);
+        connection = xcb_connect(server_name, NULL);
         if (!connection || xcb_connection_has_error(connection))
         {
+            connection = nullptr;
             return false;
         }
 
@@ -52,8 +55,6 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
             "_NET_WM_WINDOW_TYPE_NORMAL");
         load_atom(connection, _NET_WM_WINDOW_TYPE_DIALOG,
             "_NET_WM_WINDOW_TYPE_DIALOG");
-
-        xcb_disconnect(connection);
 
         return true;
     }
@@ -382,6 +383,7 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
     {
         if (xw)
         {
+            LOGI("activate ", xw->title);
             wlr_xwayland_surface_activate(xw, active);
         }
 
@@ -984,6 +986,28 @@ void wf::xwayland_update_default_cursor()
         wlr_xwayland_set_cursor(xwayland_handle, image->buffer,
             image->width * 4, image->width, image->height,
             image->hotspot_x, image->hotspot_y);
+    }
+
+#endif
+}
+
+void wf::xwayland_bring_to_front(wlr_surface *surface)
+{
+#if WF_HAS_XWAYLAND
+    if (wlr_surface_is_xwayland_surface(surface))
+    {
+        if (!connection)
+        {
+            LOGE("No connection to Xwayland, but a Xwayland surface?");
+            return;
+        }
+
+        auto xw = wlr_xwayland_surface_from_wlr_surface(surface);
+        LOGI("Bring front xw ", xw->title);
+
+        uint32_t value[1] = {XCB_STACK_MODE_ABOVE};
+        xcb_configure_window(connection, xw->window_id, XCB_CONFIG_WINDOW_STACK_MODE,
+            value);
     }
 
 #endif
