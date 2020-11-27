@@ -52,6 +52,8 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
             "_NET_WM_WINDOW_TYPE_NORMAL");
         load_atom(connection, _NET_WM_WINDOW_TYPE_DIALOG,
             "_NET_WM_WINDOW_TYPE_DIALOG");
+
+        xcb_disconnect(connection);
         return true;
     }
 
@@ -379,7 +381,6 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
     {
         if (xw)
         {
-            LOGI("activate ", xw->title);
             wlr_xwayland_surface_activate(xw, active);
         }
 
