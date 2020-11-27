@@ -55,7 +55,6 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
             "_NET_WM_WINDOW_TYPE_NORMAL");
         load_atom(connection, _NET_WM_WINDOW_TYPE_DIALOG,
             "_NET_WM_WINDOW_TYPE_DIALOG");
-
         return true;
     }
 
@@ -1003,11 +1002,7 @@ void wf::xwayland_bring_to_front(wlr_surface *surface)
         }
 
         auto xw = wlr_xwayland_surface_from_wlr_surface(surface);
-        LOGI("Bring front xw ", xw->title);
-
-        uint32_t value[1] = {XCB_STACK_MODE_ABOVE};
-        xcb_configure_window(connection, xw->window_id, XCB_CONFIG_WINDOW_STACK_MODE,
-            value);
+        wlr_xwayland_surface_restack(xw, NULL, XCB_STACK_MODE_ABOVE);
     }
 
 #endif
