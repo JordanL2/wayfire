@@ -14,8 +14,6 @@
 
 #if WF_HAS_XWAYLAND
 
-static xcb_connection_t *connection;
-
 class wayfire_xwayland_view_base : public wf::wlr_view_t
 {
   protected:
@@ -44,10 +42,9 @@ class wayfire_xwayland_view_base : public wf::wlr_view_t
   public:
     static bool load_atoms(const char *server_name)
     {
-        connection = xcb_connect(server_name, NULL);
+        auto connection = xcb_connect(server_name, NULL);
         if (!connection || xcb_connection_has_error(connection))
         {
-            connection = nullptr;
             return false;
         }
 
