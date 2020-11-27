@@ -995,16 +995,9 @@ void wf::xwayland_bring_to_front(wlr_surface *surface)
 #if WF_HAS_XWAYLAND
     if (wlr_surface_is_xwayland_surface(surface))
     {
-        if (!connection)
-        {
-            LOGE("No connection to Xwayland, but a Xwayland surface?");
-            return;
-        }
-
         auto xw = wlr_xwayland_surface_from_wlr_surface(surface);
         wlr_xwayland_surface_restack(xw, NULL, XCB_STACK_MODE_ABOVE);
     }
-
 #endif
 }
 
