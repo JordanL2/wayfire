@@ -998,6 +998,7 @@ void wf::xwayland_bring_to_front(wlr_surface *surface)
         auto xw = wlr_xwayland_surface_from_wlr_surface(surface);
         wlr_xwayland_surface_restack(xw, NULL, XCB_STACK_MODE_ABOVE);
     }
+
 #endif
 }
 
